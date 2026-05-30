@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${host.name} + ' - Gastgeber'">Gastgeber</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/layout :: icon-sprite}"/>
+<th:block th:replace="~{fragments/layout :: site-header}"/>
+
+<main>
+    <div class="page-header">
+        <div>
+            <h1 th:text="${host.name}"></h1>
+            <p class="subtitle" th:text="${host.email}"></p>
+        </div>
+        <div class="page-header-actions">
+            <a th:href="@{/hosts}" class="btn btn-secondary">Zurück</a>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div>
+            <div class="card">
+                <h2 class="card-title">Ueber den Gastgeber</h2>
+                <p th:if="${host.description != null and !host.description.isEmpty()}"
+                   th:text="${host.description}"></p>
+                <p class="text-muted" th:if="${host.description == null or host.description.isEmpty()}">
+                    <em>Noch keine Beschreibung verfasst.</em>
+                </p>
+
+                <h3 class="section-title" style="font-size: 16px;">Akzeptierte Tierarten</h3>
+                <div class="pills" th:if="${not #lists.isEmpty(host.acceptedAnimals)}">
+                    <th:block th:each="t : ${host.acceptedAnimals}">
+                        <th:block th:replace="~{fragments/layout :: animal-pill(${t})}"/>
+                    </th:block>
+                </div>
+                <p class="text-muted" th:if="${#lists.isEmpty(host.acceptedAnimals)}">
+                    <em>Noch keine Tierarten angegeben.</em>
+                </p>
+            </div>
+        </div>
+
+        <div>
+            <div class="detail-summary">
+                <h3 style="margin-top: 0;">Konditionen</h3>
+                <div style="margin-bottom: var(--space-4);">
+                    <span class="price-tag" style="font-size: 28px;">
+                        <span th:text="${#numbers.formatDecimal(host.pricePerWeek, 1, 2)}"></span>&nbsp;€
+                    </span>
+                    <span class="price-unit">/ Woche</span>
+                </div>
+                <dl>
+                    <dt>Verfügbar ab</dt>
+                    <dd th:if="${host.availableFrom != null}"
+                        th:text="${#temporals.format(host.availableFrom, 'dd.MM.yyyy')}"></dd>
+                    <dd th:if="${host.availableFrom == null}" class="text-muted">nicht angegeben</dd>
+
+                    <dt>Verfügbar bis</dt>
+                    <dd th:if="${host.availableUntil != null}"
+                        th:text="${#temporals.format(host.availableUntil, 'dd.MM.yyyy')}"></dd>
+                    <dd th:if="${host.availableUntil == null}" class="text-muted">nicht angegeben</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: site-footer}"/>
+</body>
+</html>

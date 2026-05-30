@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Anfragen &middot; Pawsitters</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/layout :: icon-sprite}"/>
+<th:block th:replace="~{fragments/layout :: site-header}"/>
+
+<main>
+    <div class="page-header">
+        <div>
+            <h1>Anfragen</h1>
+            <p class="subtitle" sec:authorize="hasRole('HOST') and !hasRole('OWNER')">
+                Offene Anfragen, für die du als Gastgeber ein Angebot abgeben kannst.
+            </p>
+            <p class="subtitle" sec:authorize="hasRole('OWNER') and !hasRole('HOST')">
+                Deine bisherigen Betreuungsanfragen.
+            </p>
+            <p class="subtitle" sec:authorize="hasRole('OWNER') and hasRole('HOST')">
+                Deine eigenen Anfragen.
+            </p>
+            <p class="subtitle" sec:authorize="hasRole('ADMIN')">
+                Alle Anfragen auf der Plattform.
+            </p>
+        </div>
+        <div class="page-header-actions" sec:authorize="hasRole('OWNER')">
+            <a th:href="@{/requests/new}" class="btn">
+                <svg width="16" height="16"><use href="#icon-plus"/></svg>
+                Neue Anfrage
+            </a>
+        </div>
+    </div>
+
+    <div class="table-wrapper" th:if="${not #lists.isEmpty(requests)}">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tier</th>
+                <th>Tierart</th>
+                <th>Besitzer</th>
+                <th>Zeitraum</th>
+                <th>Angebote</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${requests}">
+                <td>#<span th:text="${r.id}"></span></td>
+                <td th:text="${r.pet.name}"></td>
+                <td>
+                    <th:block th:replace="~{fragments/layout :: animal-pill(${r.pet.animalType})}"/>
+                </td>
+                <td th:text="${r.pet.owner.name}"></td>
+                <td>
+                    <span th:text="${#temporals.format(r.startDate, 'dd.MM.yyyy')}"></span> &ndash;
+                    <span th:text="${#temporals.format(r.endDate, 'dd.MM.yyyy')}"></span>
+                </td>
+                <td th:text="${#lists.size(r.offers)}"></td>
+                <td><th:block th:replace="~{fragments/layout :: status-badge(${r.status})}"/></td>
+                <td><a th:href="@{'/requests/' + ${r.id}}" class="btn btn-sm btn-secondary">Details</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(requests)}">
+        <div class="empty-state-icon"><svg><use href="#icon-calendar"/></svg></div>
+        <h3 sec:authorize="hasRole('HOST') and !hasRole('OWNER')">Aktuell keine offenen Anfragen</h3>
+        <h3 sec:authorize="hasRole('OWNER')">Du hast noch keine Anfragen</h3>
+        <p sec:authorize="hasRole('OWNER')">Stelle deine erste Anfrage, sobald du ein Tier registriert hast.</p>
+        <p sec:authorize="hasRole('HOST') and !hasRole('OWNER')">Sobald Tierhalter Anfragen stellen, erscheinen sie hier.</p>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: site-footer}"/>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Registrieren &middot; Pawsitters</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/layout :: icon-sprite}"/>
+<th:block th:replace="~{fragments/layout :: site-header}"/>
+
+<div class="auth-page">
+    <div class="auth-card auth-card-wide">
+        <div class="auth-header">
+            <div class="brand">
+                <svg class="brand-icon"><use href="#icon-paw"/></svg>
+                <span>Pawsitters</span>
+            </div>
+            <h1>Konto erstellen</h1>
+            <p>In wenigen Schritten registriert und einsatzbereit.</p>
+        </div>
+
+        <div class="alert alert-error" th:if="${error}">
+            <svg class="alert-icon"><use href="#icon-warning"/></svg>
+            <span th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/register}" method="post">
+            <div class="field">
+                <label for="displayName">Vollständiger Name</label>
+                <input type="text" id="displayName" name="displayName" required
+                       th:value="${displayName}" placeholder="z. B. Tom Müller"/>
+            </div>
+
+            <div class="field">
+                <label for="username">Benutzername</label>
+                <input type="text" id="username" name="username" required minlength="3" maxlength="30"
+                       pattern="[a-zA-Z0-9._-]+" th:value="${username}"
+                       placeholder="3-30 Zeichen, nur Buchstaben/Zahlen"/>
+                <span class="hint">Wird beim Login verwendet, eindeutig.</span>
+            </div>
+
+            <div class="field">
+                <label for="email">E-Mail-Adresse</label>
+                <input type="email" id="email" name="email" required
+                       th:value="${email}" placeholder="z. B. tom@example.com"/>
+            </div>
+
+            <div class="field">
+                <label for="password">Passwort</label>
+                <input type="password" id="password" name="password" required minlength="6"
+                       autocomplete="new-password"
+                       placeholder="Mindestens 6 Zeichen"/>
+                <span class="hint">Wird sicher mit BCrypt gespeichert.</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Was möchtest du bei Pawsitters tun?</span>
+                <div style="display: grid; gap: 8px;">
+                    <label class="checkbox-field">
+                        <input type="checkbox" name="becomeOwner" value="true"
+                               th:checked="${becomeOwner != null and becomeOwner}"/>
+                        <span class="checkbox-field-content">
+                            <span class="checkbox-field-title">Ich habe Tiere und suche Betreuung</span>
+                            <span class="checkbox-field-desc">Du kannst Tiere registrieren und Anfragen stellen.</span>
+                        </span>
+                    </label>
+                    <label class="checkbox-field">
+                        <input type="checkbox" name="becomeHost" value="true"
+                               th:checked="${becomeHost != null and becomeHost}"/>
+                        <span class="checkbox-field-content">
+                            <span class="checkbox-field-title">Ich möchte Tiere betreuen</span>
+                            <span class="checkbox-field-desc">Du kannst Angebote an Tierhalter senden und Geld verdienen.</span>
+                        </span>
+                    </label>
+                </div>
+                <span class="hint">Du kannst später jederzeit auch die zweite Rolle aktivieren.</span>
+            </div>
+
+            <button type="submit" style="width: 100%; justify-content: center;">
+                Konto erstellen
+                <svg width="16" height="16"><use href="#icon-arrow-right"/></svg>
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            Schon registriert? <a th:href="@{/login}">Jetzt anmelden</a>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: site-footer}"/>
+</body>
+</html>

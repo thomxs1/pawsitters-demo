@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Pawsitters</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+
+    <!-- Inline SVG-Sprite. Wird einmal pro Seite eingebunden, dann via <use href="#icon-..."> referenziert. -->
+    <th:block th:fragment="icon-sprite">
+        <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+            <!-- Paw -->
+            <symbol id="icon-paw" viewBox="0 0 24 24">
+                <path d="M12 13c-2.5 0-7 1.3-7 4v1h14v-1c0-2.7-4.5-4-7-4zm-5.5-2c1.1 0 2-1.3 2-3s-.9-3-2-3-2 1.3-2 3 .9 3 2 3zm11 0c1.1 0 2-1.3 2-3s-.9-3-2-3-2 1.3-2 3 .9 3 2 3zM9 8c1.1 0 2-1.3 2-3S10.1 2 9 2 7 3.3 7 5s.9 3 2 3zm6 0c1.1 0 2-1.3 2-3s-.9-3-2-3-2 1.3-2 3 .9 3 2 3z"/>
+            </symbol>
+            <!-- Home -->
+            <symbol id="icon-home" viewBox="0 0 24 24">
+                <path d="M12 3l9 7v11h-6v-6h-6v6H3V10l9-7z"/>
+            </symbol>
+            <!-- Dog -->
+            <symbol id="icon-dog" viewBox="0 0 24 24">
+                <path d="M4.5 9.5c-.83 0-1.5-.67-1.5-1.5V6c0-.55.45-1 1-1s1 .45 1 1v1.5c.83 0 1.5.67 1.5 1.5S5.33 9.5 4.5 9.5zM19.5 9.5c-.83 0-1.5-.67-1.5-1.5S18.67 6.5 19.5 6.5V5c0-.55.45-1 1-1s1 .45 1 1v3c0 .83-.67 1.5-1.5 1.5zM18 11c0-3.31-2.69-6-6-6s-6 2.69-6 6c0 2.5 1.5 4.62 3.66 5.55v2.45c0 .55.45 1 1 1h2.67v-2h2v2h2.67c.55 0 1-.45 1-1v-2.45C16.5 15.62 18 13.5 18 11zm-9-1c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm6 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-3 5c-1 0-2-.5-2-1.5h4c0 1-1 1.5-2 1.5z"/>
+            </symbol>
+            <!-- Cat -->
+            <symbol id="icon-cat" viewBox="0 0 24 24">
+                <path d="M12 8c-4.42 0-8 3.58-8 8 0 2.21.9 4.21 2.34 5.66L7 22h2v-2c0-1.66 1.34-3 3-3s3 1.34 3 3v2h2l.66-.34C19.1 20.21 20 18.21 20 16c0-4.42-3.58-8-8-8zM9 14c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm6 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zM6.5 7.5L4 4l3.5 1L6.5 7.5zm11 0L16.5 5 20 4l-2.5 3.5z"/>
+            </symbol>
+            <!-- Bird -->
+            <symbol id="icon-bird" viewBox="0 0 24 24">
+                <path d="M12 2C8 2 4.5 5 4.5 9.5c0 1.5.5 3 1.5 4l-3 3 1.5 1.5L7 15.5c1 1 2.5 1.5 4 1.5 1 0 2-.5 3-1l4 4 1.5-1.5-4-4c.5-1 1-2 1-3 0-4.5-3.5-7.5-7-7.5zm0 2c2.5 0 4.5 2 4.5 4.5S14.5 13 12 13s-4.5-2-4.5-4.5S9.5 4 12 4zm-1 3.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/>
+            </symbol>
+            <!-- Generic Pet -->
+            <symbol id="icon-pet" viewBox="0 0 24 24">
+                <path d="M12 4c-3.5 0-6 2.5-6 6 0 2 1 4 2.5 5L7 22h10l-1.5-7c1.5-1 2.5-3 2.5-5 0-3.5-2.5-6-6-6zm-2 5c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm4 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 4c1 0 2 .5 2 1h-4c0-.5 1-1 2-1z"/>
+            </symbol>
+            <!-- User -->
+            <symbol id="icon-user" viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </symbol>
+            <!-- Calendar -->
+            <symbol id="icon-calendar" viewBox="0 0 24 24">
+                <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
+            </symbol>
+            <!-- Check -->
+            <symbol id="icon-check" viewBox="0 0 24 24">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </symbol>
+            <!-- X -->
+            <symbol id="icon-x" viewBox="0 0 24 24">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </symbol>
+            <!-- Plus -->
+            <symbol id="icon-plus" viewBox="0 0 24 24">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </symbol>
+            <!-- Arrow Right -->
+            <symbol id="icon-arrow-right" viewBox="0 0 24 24">
+                <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+            </symbol>
+            <!-- Logout -->
+            <symbol id="icon-logout" viewBox="0 0 24 24">
+                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+            </symbol>
+            <!-- Info -->
+            <symbol id="icon-info" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </symbol>
+            <!-- Warning -->
+            <symbol id="icon-warning" viewBox="0 0 24 24">
+                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+            </symbol>
+            <!-- Star -->
+            <symbol id="icon-star" viewBox="0 0 24 24">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </symbol>
+            <!-- Empty Box -->
+            <symbol id="icon-empty" viewBox="0 0 24 24">
+                <path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-2 .89-2 2v11c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/>
+            </symbol>
+        </svg>
+    </th:block>
+
+    <!-- Header / Top-Navigation -->
+    <header class="site-header" th:fragment="site-header">
+        <div class="site-header-inner">
+            <a th:href="@{/}" class="brand">
+                <svg class="brand-icon"><use href="#icon-paw"/></svg>
+                <span>Pawsitters</span>
+            </a>
+
+            <!-- Eingeloggte User: Navigation + Dashboard -->
+            <nav class="main-nav" sec:authorize="isAuthenticated()">
+                <a th:href="@{/dashboard}">Mein Dashboard</a>
+                <a th:href="@{/hosts}">Gastgeber</a>
+                <a th:href="@{/requests}">Anfragen</a>
+                <a sec:authorize="hasRole('OWNER')" th:href="@{/pets}">Meine Tiere</a>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/owners}">Alle Tierhalter</a>
+            </nav>
+
+            <!-- Nicht-eingeloggt: leere Navigation, Buttons rechts -->
+            <nav class="main-nav" sec:authorize="!isAuthenticated()">
+                <a th:href="@{/}">Start</a>
+            </nav>
+
+            <div class="user-menu" sec:authorize="isAuthenticated()">
+                <span class="user-greeting">
+                    <span class="user-avatar"
+                          th:with="dn=${#authentication.principal.displayName}"
+                          th:text="${dn != null and dn.length() > 0} ? ${#strings.substring(dn, 0, 1)} : 'U'">U</span>
+                    <span sec:authentication="principal.displayName">User</span>
+                </span>
+                <form th:action="@{/logout}" method="post" class="inline-form">
+                    <button type="submit" class="btn btn-ghost btn-sm" title="Abmelden">
+                        <svg width="16" height="16"><use href="#icon-logout"/></svg>
+                        Abmelden
+                    </button>
+                </form>
+            </div>
+
+            <div class="user-menu" sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}" class="btn btn-ghost btn-sm">Anmelden</a>
+                <a th:href="@{/register}" class="btn btn-sm">Registrieren</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Footer -->
+    <footer class="site-footer" th:fragment="site-footer">
+        <p>Pawsitters &mdash; DHBW Heilbronn Projektarbeit &copy; 2026</p>
+    </footer>
+
+    <!-- Helper-Fragment: Animal Pill mit passendem Icon -->
+    <th:block th:fragment="animal-pill(type)">
+        <span class="pill">
+            <svg width="14" height="14" th:switch="${type.name()}">
+                <use th:case="'DOG'" href="#icon-dog"/>
+                <use th:case="'CAT'" href="#icon-cat"/>
+                <use th:case="'BIRD'" href="#icon-bird"/>
+                <use th:case="*" href="#icon-pet"/>
+            </svg>
+            <span th:switch="${type.name()}">
+                <span th:case="'DOG'">Hund</span>
+                <span th:case="'CAT'">Katze</span>
+                <span th:case="'BIRD'">Vogel</span>
+                <span th:case="'RABBIT'">Hase</span>
+                <span th:case="'HAMSTER'">Hamster</span>
+                <span th:case="'REPTILE'">Reptil</span>
+                <span th:case="'FISH'">Fisch</span>
+                <span th:case="*">Sonstige</span>
+            </span>
+        </span>
+    </th:block>
+
+    <!-- Status-Badge -->
+    <th:block th:fragment="status-badge(status)">
+        <span th:class="'badge badge-' + ${status}" th:switch="${status.name()}">
+            <span th:case="'OPEN'">Offen</span>
+            <span th:case="'IN_PROGRESS'">In Bearbeitung</span>
+            <span th:case="'MATCHED'">Angenommen</span>
+            <span th:case="'CANCELLED'">Abgebrochen</span>
+            <span th:case="'PENDING'">Wartend</span>
+            <span th:case="'ACCEPTED'">Akzeptiert</span>
+            <span th:case="'REJECTED'">Abgelehnt</span>
+            <span th:case="*" th:text="${status}"></span>
+        </span>
+    </th:block>
+</head>
+<body>
+<!-- Dieser body wird nie gerendert, ist nur Container für die Fragmente. -->
+</body>
+</html>

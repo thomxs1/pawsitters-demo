@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Gastgeber-Verzeichnis &middot; Pawsitters</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/layout :: icon-sprite}"/>
+<th:block th:replace="~{fragments/layout :: site-header}"/>
+
+<main>
+    <div class="page-header">
+        <div>
+            <h1>Gastgeber-Verzeichnis</h1>
+            <p class="subtitle">Alle privaten Gastgeber, die Tiere aufnehmen.</p>
+        </div>
+    </div>
+
+    <div class="card-list" th:if="${not #lists.isEmpty(hosts)}">
+        <div class="profile-card" th:each="h : ${hosts}">
+            <div class="profile-header">
+                <span class="profile-avatar"><svg><use href="#icon-user"/></svg></span>
+                <div style="flex: 1;">
+                    <p class="profile-name" th:text="${h.name}"></p>
+                    <p class="profile-sub" th:text="${h.email}"></p>
+                </div>
+                <span class="price-tag">
+                    <span th:text="${#numbers.formatDecimal(h.pricePerWeek, 1, 2)}"></span>&nbsp;€
+                    <span class="price-unit">/ Woche</span>
+                </span>
+            </div>
+
+            <p class="profile-body" th:if="${h.description != null and !h.description.isEmpty()}"
+               th:text="${h.description}"></p>
+
+            <div class="pills mt-4" th:if="${not #lists.isEmpty(h.acceptedAnimals)}">
+                <th:block th:each="t : ${h.acceptedAnimals}">
+                    <th:block th:replace="~{fragments/layout :: animal-pill(${t})}"/>
+                </th:block>
+            </div>
+
+            <div class="profile-meta mt-4" th:if="${h.availableFrom != null}">
+                <span class="profile-meta-item">
+                    <svg width="14" height="14"><use href="#icon-calendar"/></svg>
+                    <span th:text="${#temporals.format(h.availableFrom, 'dd.MM.yyyy')}"></span> &ndash;
+                    <span th:text="${#temporals.format(h.availableUntil, 'dd.MM.yyyy')}"></span>
+                </span>
+            </div>
+
+            <div class="mt-4">
+                <a th:href="@{'/hosts/' + ${h.id}}" class="btn btn-sm btn-secondary">
+                    Details ansehen
+                    <svg width="14" height="14"><use href="#icon-arrow-right"/></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(hosts)}">
+        <div class="empty-state-icon"><svg><use href="#icon-user"/></svg></div>
+        <h3>Noch keine Gastgeber</h3>
+        <p>Sobald sich Gastgeber registrieren, erscheinen sie hier.</p>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: site-footer}"/>
+</body>
+</html>

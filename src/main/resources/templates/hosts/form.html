@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Gastgeber-Profil bearbeiten &middot; Pawsitters</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/layout :: icon-sprite}"/>
+<th:block th:replace="~{fragments/layout :: site-header}"/>
+
+<main style="max-width: 720px;">
+    <div class="page-header">
+        <div>
+            <h1>Gastgeber-Profil bearbeiten</h1>
+            <p class="subtitle">Sag potenziellen Tierhaltern, wer du bist und was du anbietest.</p>
+        </div>
+    </div>
+
+    <div class="alert alert-error" th:if="${error}">
+        <svg class="alert-icon"><use href="#icon-warning"/></svg>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="card">
+        <form th:action="@{'/hosts/' + ${host.id} + '/edit'}" method="post">
+            <div class="field">
+                <label for="name">Anzeigename</label>
+                <input type="text" id="name" name="name" required th:value="${host.name}"/>
+            </div>
+
+            <div class="field">
+                <label for="description">Beschreibung</label>
+                <textarea id="description" name="description" maxlength="1000"
+                          th:text="${host.description}"
+                          placeholder="z. B. 'Tierfreundliche Wohnung mit Garten, viel Erfahrung mit Hunden ...'"></textarea>
+                <span class="hint">So entscheiden Tierhalter, ob sie dir vertrauen.</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Welche Tierarten nimmst du auf?</span>
+                <div class="checkbox-grid">
+                    <label class="checkbox-field" th:each="t : ${animalTypes}">
+                        <input type="checkbox" name="animals" th:value="${t}"
+                               th:checked="${host.acceptedAnimals != null and host.acceptedAnimals.contains(t)}"/>
+                        <span class="checkbox-field-content">
+                            <span class="checkbox-field-title" th:switch="${t.name()}">
+                                <th:block th:case="'DOG'">🐕 Hund</th:block>
+                                <th:block th:case="'CAT'">🐈 Katze</th:block>
+                                <th:block th:case="'BIRD'">🐦 Vogel</th:block>
+                                <th:block th:case="'RABBIT'">🐰 Hase</th:block>
+                                <th:block th:case="'HAMSTER'">🐹 Hamster</th:block>
+                                <th:block th:case="'REPTILE'">🦎 Reptil</th:block>
+                                <th:block th:case="'FISH'">🐠 Fisch</th:block>
+                                <th:block th:case="*">Sonstige</th:block>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="field" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+                <div>
+                    <label for="availableFrom">Verfügbar ab</label>
+                    <input type="date" id="availableFrom" name="availableFrom"
+                           th:value="${host.availableFrom}"/>
+                </div>
+                <div>
+                    <label for="availableUntil">Verfügbar bis</label>
+                    <input type="date" id="availableUntil" name="availableUntil"
+                           th:value="${host.availableUntil}"/>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="pricePerWeek">Preis pro Woche (in &euro;)</label>
+                <input type="number" id="pricePerWeek" name="pricePerWeek" required min="0" step="0.01"
+                       th:value="${host.pricePerWeek}" placeholder="z. B. 120.00"/>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">
+                    <svg width="16" height="16"><use href="#icon-check"/></svg>
+                    Profil speichern
+                </button>
+                <a th:href="@{/dashboard}" class="btn btn-secondary">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: site-footer}"/>
+</body>
+</html>

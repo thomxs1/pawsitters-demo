@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${owner.name} + ' - Pawsitters'">Tierhalter</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/layout :: icon-sprite}"/>
+<th:block th:replace="~{fragments/layout :: site-header}"/>
+
+<main>
+    <div class="page-header">
+        <div>
+            <h1 th:text="${owner.name}"></h1>
+            <p class="subtitle" th:text="${owner.email}"></p>
+        </div>
+        <div class="page-header-actions">
+            <a th:href="@{/owners}" class="btn btn-secondary">Zurück</a>
+        </div>
+    </div>
+
+    <div class="card mb-4" th:if="${owner.description != null and !owner.description.isEmpty()}">
+        <h3 style="margin-top: 0;">Ueber den Tierhalter</h3>
+        <p th:text="${owner.description}"></p>
+    </div>
+
+    <h2 class="section-title">Tiere von <span th:text="${owner.name}"></span></h2>
+
+    <div class="card-list" th:if="${not #lists.isEmpty(owner.pets)}">
+        <div class="profile-card" th:each="p : ${owner.pets}">
+            <div class="profile-header">
+                <span class="profile-avatar">
+                    <svg th:switch="${p.animalType.name()}">
+                        <use th:case="'DOG'" href="#icon-dog"/>
+                        <use th:case="'CAT'" href="#icon-cat"/>
+                        <use th:case="'BIRD'" href="#icon-bird"/>
+                        <use th:case="*" href="#icon-pet"/>
+                    </svg>
+                </span>
+                <div>
+                    <p class="profile-name" th:text="${p.name}"></p>
+                    <p class="profile-sub">
+                        <th:block th:switch="${p.animalType.name()}">
+                            <span th:case="'DOG'">Hund</span>
+                            <span th:case="'CAT'">Katze</span>
+                            <span th:case="*" th:text="${p.animalType}"></span>
+                        </th:block>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(owner.pets)}">
+        <div class="empty-state-icon"><svg><use href="#icon-pet"/></svg></div>
+        <h3>Noch keine Tiere registriert</h3>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: site-footer}"/>
+</body>
+</html>

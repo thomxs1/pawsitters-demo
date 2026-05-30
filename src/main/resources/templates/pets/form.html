@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Neues Tier &middot; Pawsitters</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/layout :: icon-sprite}"/>
+<th:block th:replace="~{fragments/layout :: site-header}"/>
+
+<main style="max-width: 640px;">
+    <div class="page-header">
+        <div>
+            <h1>Tier hinzufügen</h1>
+            <p class="subtitle">Erfasse die Basisdaten deines Tiers.</p>
+        </div>
+    </div>
+
+    <div class="alert alert-error" th:if="${error}">
+        <svg class="alert-icon"><use href="#icon-warning"/></svg>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="card">
+        <form th:action="@{/pets}" method="post" th:object="${pet}">
+            <div class="field">
+                <label for="name">Name des Tiers</label>
+                <input type="text" id="name" name="name" required th:value="*{name}"
+                       placeholder="z. B. Bello, Luna, Charlie"/>
+            </div>
+            <div class="field">
+                <label for="animalType">Tierart</label>
+                <select id="animalType" name="animalType" required>
+                    <option value="">Bitte wählen ...</option>
+                    <option th:each="t : ${animalTypes}" th:value="${t}" th:selected="*{animalType == t}"
+                            th:switch="${t.name()}">
+                        <th:block th:case="'DOG'">🐕 Hund</th:block>
+                        <th:block th:case="'CAT'">🐈 Katze</th:block>
+                        <th:block th:case="'BIRD'">🐦 Vogel</th:block>
+                        <th:block th:case="'RABBIT'">🐰 Hase</th:block>
+                        <th:block th:case="'HAMSTER'">🐹 Hamster</th:block>
+                        <th:block th:case="'REPTILE'">🦎 Reptil</th:block>
+                        <th:block th:case="'FISH'">🐠 Fisch</th:block>
+                        <th:block th:case="*">Sonstige</th:block>
+                    </option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="age">Alter (Jahre)</label>
+                <input type="number" id="age" name="age" min="0" max="50" th:value="*{age}"
+                       placeholder="optional"/>
+            </div>
+            <div class="field">
+                <label for="notes">Notizen für Gastgeber</label>
+                <textarea id="notes" name="notes" maxlength="1000" th:text="*{notes}"
+                          placeholder="Charakter, Futter, Besonderheiten, Medikamente ..."></textarea>
+                <span class="hint">Diese Hinweise sehen potenzielle Gastgeber.</span>
+            </div>
+            <div class="form-actions">
+                <button type="submit">
+                    <svg width="16" height="16"><use href="#icon-check"/></svg>
+                    Tier speichern
+                </button>
+                <a th:href="@{/dashboard}" class="btn btn-secondary">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: site-footer}"/>
+</body>
+</html>

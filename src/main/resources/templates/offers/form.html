@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Angebot senden &middot; Pawsitters</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/layout :: icon-sprite}"/>
+<th:block th:replace="~{fragments/layout :: site-header}"/>
+
+<main style="max-width: 640px;">
+    <div class="page-header">
+        <div>
+            <h1>Angebot senden</h1>
+            <p class="subtitle">Schlage einen Preis für die Betreuung vor.</p>
+        </div>
+    </div>
+
+    <div class="alert alert-error" th:if="${error}">
+        <svg class="alert-icon"><use href="#icon-warning"/></svg>
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Anfrage-Zusammenfassung -->
+    <div class="card mb-4" th:if="${request != null}" style="background: var(--c-cream-dark);">
+        <h3 style="margin-top: 0;">Worum geht es?</h3>
+        <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; font-size: 14px;">
+            <dt class="text-muted">Tier</dt>
+            <dd style="margin: 0;">
+                <strong th:text="${request.pet.name}"></strong>
+                (<th:block th:replace="~{fragments/layout :: animal-pill(${request.pet.animalType})}"/>)
+            </dd>
+            <dt class="text-muted">Zeitraum</dt>
+            <dd style="margin: 0;">
+                <span th:text="${#temporals.format(request.startDate, 'dd.MM.yyyy')}"></span> &ndash;
+                <span th:text="${#temporals.format(request.endDate, 'dd.MM.yyyy')}"></span>
+            </dd>
+            <dt class="text-muted">Halter</dt>
+            <dd style="margin: 0;" th:text="${request.pet.owner.name}"></dd>
+        </dl>
+    </div>
+
+    <div class="card">
+        <form th:action="@{/offers}" method="post">
+            <input type="hidden" name="requestId" th:value="${requestId}"/>
+
+            <div class="alert alert-info" th:if="${hostProfile != null}">
+                <svg class="alert-icon"><use href="#icon-info"/></svg>
+                <span>Du sendest dieses Angebot als
+                    <strong th:text="${hostProfile.name}"></strong>.</span>
+            </div>
+
+            <div class="field">
+                <label for="totalPrice">Dein Preis für die gesamte Betreuung (in &euro;)</label>
+                <input type="number" id="totalPrice" name="totalPrice" required min="0" step="0.01"
+                       placeholder="z. B. 120.00"/>
+                <span class="hint">Gesamtpreis &mdash; nicht pro Tag oder pro Woche.</span>
+            </div>
+
+            <div class="field">
+                <label for="message">Nachricht an den Halter (optional)</label>
+                <textarea id="message" name="message" maxlength="500"
+                          placeholder="z. B. 'Ich freue mich auf Bello, habe schon viele Hunde betreut ...'"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">
+                    <svg width="16" height="16"><use href="#icon-arrow-right"/></svg>
+                    Angebot abschicken
+                </button>
+                <a th:href="@{'/requests/' + ${requestId}}" class="btn btn-secondary">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: site-footer}"/>
+</body>
+</html>

@@ -1,0 +1,57 @@
+# Render Blueprint - definiert Web Service + Postgres in einem File.
+# Doku: https://render.com/docs/blueprint-spec
+#
+# Nutzung: Im Render-Dashboard "Blueprints" -> "New Blueprint Instance"
+# -> dein Repo waehlen. Render liest diese Datei und legt alles an.
+# Du musst NUR noch die Werte fuer DEMO_PASSWORD und ADMIN_PASSWORD setzen
+# (sind als sync:false markiert, damit Render danach fragt).
+
+services:
+  - type: web
+    name: pawsitters
+    runtime: docker
+    plan: free
+    region: frankfurt
+    branch: main
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /login
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      # JDBC-URL aus den Einzelteilen zusammenbauen, weil Renders
+      # connectionString im postgres://-Format kommt und JDBC jdbc:postgresql:// erwartet
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pawsitters-db
+          property: connectionString
+      - key: DATABASE_HOST
+        fromDatabase:
+          name: pawsitters-db
+          property: host
+      - key: DATABASE_PORT
+        fromDatabase:
+          name: pawsitters-db
+          property: port
+      - key: DATABASE_NAME
+        fromDatabase:
+          name: pawsitters-db
+          property: database
+      - key: DATABASE_USERNAME
+        fromDatabase:
+          name: pawsitters-db
+          property: user
+      - key: DATABASE_PASSWORD
+        fromDatabase:
+          name: pawsitters-db
+          property: password
+      - key: DEMO_PASSWORD
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+
+databases:
+  - name: pawsitters-db
+    plan: free
+    region: frankfurt
+    databaseName: pawsitters
+    postgresMajorVersion: 16

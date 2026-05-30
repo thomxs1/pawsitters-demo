@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Mein Dashboard &middot; Pawsitters</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/layout :: icon-sprite}"/>
+<th:block th:replace="~{fragments/layout :: site-header}"/>
+
+<main>
+    <section class="dashboard-greeting">
+        <h1>Hallo, <span th:text="${user.displayName}"></span> 👋</h1>
+        <p>
+            <span sec:authorize="hasRole('OWNER')" class="badge badge-role">Tierhalter</span>
+            <span sec:authorize="hasRole('HOST')" class="badge badge-role">Gastgeber</span>
+            <span sec:authorize="hasRole('ADMIN')" class="badge badge-role">Admin</span>
+        </p>
+    </section>
+
+    <!-- ============================= -->
+    <!-- TIERHALTER-Sektion             -->
+    <!-- ============================= -->
+    <section class="dashboard-section" sec:authorize="hasRole('OWNER')" th:if="${ownerProfile != null}">
+
+        <div class="stat-grid">
+            <div class="stat-card">
+                <span class="stat-label">Meine Tiere</span>
+                <span class="stat-value" th:text="${#lists.size(ownerPets)}">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Aktive Anfragen</span>
+                <span class="stat-value"
+                      th:text="${#lists.size(ownerRequests.?[status.name() != 'CANCELLED'])}">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Erfolgreich gematcht</span>
+                <span class="stat-value"
+                      th:text="${#lists.size(ownerRequests.?[status.name() == 'MATCHED'])}">0</span>
+            </div>
+        </div>
+
+        <div class="dashboard-section-header">
+            <h2>Meine Tiere</h2>
+            <a th:href="@{/pets/new}" class="btn btn-sm">
+                <svg width="14" height="14"><use href="#icon-plus"/></svg>
+                Tier hinzufügen
+            </a>
+        </div>
+
+        <div class="card-list" th:if="${not #lists.isEmpty(ownerPets)}">
+            <div class="profile-card" th:each="pet : ${ownerPets}">
+                <div class="profile-header">
+                    <span class="profile-avatar">
+                        <svg th:switch="${pet.animalType.name()}">
+                            <use th:case="'DOG'" href="#icon-dog"/>
+                            <use th:case="'CAT'" href="#icon-cat"/>
+                            <use th:case="'BIRD'" href="#icon-bird"/>
+                            <use th:case="*" href="#icon-pet"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <p class="profile-name" th:text="${pet.name}"></p>
+                        <p class="profile-sub">
+                            <th:block th:switch="${pet.animalType.name()}">
+                                <span th:case="'DOG'">Hund</span>
+                                <span th:case="'CAT'">Katze</span>
+                                <span th:case="'BIRD'">Vogel</span>
+                                <span th:case="'RABBIT'">Hase</span>
+                                <span th:case="*">Sonstige Tierart</span>
+                            </th:block>
+                            <span th:if="${pet.age != null}">
+                                &middot; <span th:text="${pet.age}"></span> Jahre
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                <p class="profile-body" th:if="${pet.notes != null and !pet.notes.isEmpty()}" th:text="${pet.notes}"></p>
+            </div>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(ownerPets)}">
+            <div class="empty-state-icon">
+                <svg><use href="#icon-pet"/></svg>
+            </div>
+            <h3>Noch keine Tiere registriert</h3>
+            <p>Lege dein erstes Tier an, damit du Betreuungsanfragen stellen kannst.</p>
+            <a th:href="@{/pets/new}" class="btn">
+                <svg width="16" height="16"><use href="#icon-plus"/></svg>
+                Erstes Tier anlegen
+            </a>
+        </div>
+
+        <div class="dashboard-section-header mt-5">
+            <h2>Meine Anfragen</h2>
+            <a th:href="@{/requests/new}" class="btn btn-sm" th:if="${not #lists.isEmpty(ownerPets)}">
+                <svg width="14" height="14"><use href="#icon-plus"/></svg>
+                Neue Anfrage
+            </a>
+        </div>
+
+        <div class="table-wrapper" th:if="${not #lists.isEmpty(ownerRequests)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Tier</th>
+                    <th>Zeitraum</th>
+                    <th>Angebote</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${ownerRequests}">
+                    <td th:text="${r.pet.name}"></td>
+                    <td>
+                        <span th:text="${#temporals.format(r.startDate, 'dd.MM.yyyy')}"></span> &ndash;
+                        <span th:text="${#temporals.format(r.endDate, 'dd.MM.yyyy')}"></span>
+                    </td>
+                    <td th:text="${#lists.size(r.offers)}"></td>
+                    <td>
+                        <th:block th:replace="~{fragments/layout :: status-badge(${r.status})}"/>
+                    </td>
+                    <td>
+                        <a th:href="@{'/requests/' + ${r.id}}" class="btn btn-sm btn-secondary">Details</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(ownerRequests)}">
+            <div class="empty-state-icon">
+                <svg><use href="#icon-calendar"/></svg>
+            </div>
+            <h3>Noch keine Anfragen</h3>
+            <p>Stelle eine Betreuungsanfrage, sobald du ein Tier registriert hast.</p>
+        </div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- GASTGEBER-Sektion              -->
+    <!-- ============================= -->
+    <section class="dashboard-section" sec:authorize="hasRole('HOST')" th:if="${hostProfile != null}">
+
+        <div class="dashboard-section-header">
+            <h2>Mein Gastgeber-Profil</h2>
+            <a th:href="@{'/hosts/' + ${hostProfile.id} + '/edit'}" class="btn btn-sm btn-secondary">Bearbeiten</a>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-header">
+                <span class="profile-avatar"><svg><use href="#icon-user"/></svg></span>
+                <div>
+                    <p class="profile-name" th:text="${hostProfile.name}"></p>
+                    <p class="profile-sub" th:text="${hostProfile.email}"></p>
+                </div>
+                <div style="margin-left: auto;">
+                    <span class="price-tag">
+                        <span th:text="${#numbers.formatDecimal(hostProfile.pricePerWeek, 1, 2)}"></span>&nbsp;€
+                        <span class="price-unit">/ Woche</span>
+                    </span>
+                </div>
+            </div>
+            <p class="profile-body" th:if="${hostProfile.description != null and !hostProfile.description.isEmpty()}"
+               th:text="${hostProfile.description}"></p>
+            <p class="profile-body text-muted" th:if="${hostProfile.description == null or hostProfile.description.isEmpty()}">
+                <em>Noch keine Beschreibung. Klicke auf "Bearbeiten", um dein Profil zu vervollständigen.</em>
+            </p>
+            <div class="pills" th:if="${not #lists.isEmpty(hostProfile.acceptedAnimals)}">
+                <th:block th:each="t : ${hostProfile.acceptedAnimals}">
+                    <th:block th:replace="~{fragments/layout :: animal-pill(${t})}"/>
+                </th:block>
+            </div>
+            <div class="profile-meta mt-4">
+                <span class="profile-meta-item" th:if="${hostProfile.availableFrom != null}">
+                    <svg width="14" height="14"><use href="#icon-calendar"/></svg>
+                    Verfügbar:
+                    <span th:text="${#temporals.format(hostProfile.availableFrom, 'dd.MM.yyyy')}"></span> &ndash;
+                    <span th:text="${#temporals.format(hostProfile.availableUntil, 'dd.MM.yyyy')}"></span>
+                </span>
+            </div>
+        </div>
+
+        <div class="dashboard-section-header mt-5">
+            <h2>Meine Angebote</h2>
+        </div>
+
+        <div class="table-wrapper" th:if="${not #lists.isEmpty(hostOffers)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Anfrage</th>
+                    <th>Tier</th>
+                    <th>Preis</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="o : ${hostOffers}">
+                    <td>
+                        <a th:href="@{'/requests/' + ${o.request.id}}"
+                           th:text="'Anfrage #' + ${o.request.id}"></a>
+                    </td>
+                    <td th:text="${o.request.pet.name}"></td>
+                    <td><span th:text="${#numbers.formatDecimal(o.totalPrice, 1, 2)}"></span>&nbsp;€</td>
+                    <td>
+                        <th:block th:replace="~{fragments/layout :: status-badge(${o.status})}"/>
+                    </td>
+                    <td>
+                        <a th:href="@{'/requests/' + ${o.request.id}}" class="btn btn-sm btn-secondary">Ansehen</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(hostOffers)}">
+            <div class="empty-state-icon">
+                <svg><use href="#icon-empty"/></svg>
+            </div>
+            <h3>Noch keine Angebote verschickt</h3>
+            <p>Schaue bei den offenen Anfragen vorbei und sende dein erstes Angebot.</p>
+            <a th:href="@{/requests}" class="btn">Offene Anfragen ansehen</a>
+        </div>
+    </section>
+
+</main>
+
+<th:block th:replace="~{fragments/layout :: site-footer}"/>
+</body>
+</html>

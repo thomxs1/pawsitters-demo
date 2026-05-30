@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Tierhalter (Admin) &middot; Pawsitters</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/layout :: icon-sprite}"/>
+<th:block th:replace="~{fragments/layout :: site-header}"/>
+
+<main>
+    <div class="page-header">
+        <div>
+            <h1>Tierhalter</h1>
+            <p class="subtitle">Plattform-Ansicht aller registrierten Tierhalter (Admin).</p>
+        </div>
+    </div>
+
+    <div class="table-wrapper" th:if="${not #lists.isEmpty(owners)}">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>E-Mail</th>
+                <th>Anzahl Tiere</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="o : ${owners}">
+                <td>#<span th:text="${o.id}"></span></td>
+                <td><a th:href="@{'/owners/' + ${o.id}}" th:text="${o.name}"></a></td>
+                <td th:text="${o.email}"></td>
+                <td th:text="${#lists.size(o.pets)}"></td>
+                <td>
+                    <form class="inline-form" th:action="@{'/owners/' + ${o.id} + '/delete'}" method="post">
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Tierhalter wirklich löschen?');">
+                            Löschen
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(owners)}">
+        <div class="empty-state-icon"><svg><use href="#icon-user"/></svg></div>
+        <h3>Noch keine Tierhalter</h3>
+        <p>Sobald sich Tierhalter registrieren, erscheinen sie hier.</p>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: site-footer}"/>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Neue Anfrage &middot; Pawsitters</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/layout :: icon-sprite}"/>
+<th:block th:replace="~{fragments/layout :: site-header}"/>
+
+<main style="max-width: 640px;">
+    <div class="page-header">
+        <div>
+            <h1>Neue Betreuungsanfrage</h1>
+            <p class="subtitle">Sag uns, für welches Tier du wann eine Betreuung suchst.</p>
+        </div>
+    </div>
+
+    <div class="alert alert-error" th:if="${error}">
+        <svg class="alert-icon"><use href="#icon-warning"/></svg>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="alert alert-info" th:if="${#lists.isEmpty(pets)}">
+        <svg class="alert-icon"><use href="#icon-info"/></svg>
+        <div>
+            Du hast noch kein Tier registriert. Lege erst ein Tier an, dann kannst du eine Anfrage stellen.
+            <div style="margin-top: var(--space-2);">
+                <a th:href="@{/pets/new}" class="btn btn-sm">Tier anlegen</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" th:if="${not #lists.isEmpty(pets)}">
+        <form th:action="@{/requests}" method="post">
+            <div class="field">
+                <label for="petId">Welches Tier?</label>
+                <select id="petId" name="petId" required>
+                    <option value="">Bitte wählen ...</option>
+                    <option th:each="p : ${pets}" th:value="${p.id}"
+                            th:text="${p.name + ' (' + p.animalType + ')'}"></option>
+                </select>
+            </div>
+            <div class="field" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+                <div>
+                    <label for="startDate">Startdatum</label>
+                    <input type="date" id="startDate" name="startDate" required/>
+                </div>
+                <div>
+                    <label for="endDate">Enddatum</label>
+                    <input type="date" id="endDate" name="endDate" required/>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit">
+                    <svg width="16" height="16"><use href="#icon-check"/></svg>
+                    Anfrage erstellen
+                </button>
+                <a th:href="@{/dashboard}" class="btn btn-secondary">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: site-footer}"/>
+</body>
+</html>

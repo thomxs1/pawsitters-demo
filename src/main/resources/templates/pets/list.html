@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Meine Tiere &middot; Pawsitters</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/layout :: icon-sprite}"/>
+<th:block th:replace="~{fragments/layout :: site-header}"/>
+
+<main>
+    <div class="page-header">
+        <div>
+            <h1>Meine Tiere</h1>
+            <p class="subtitle">Alle Tiere, die du bei Pawsitters registriert hast.</p>
+        </div>
+        <div class="page-header-actions">
+            <a th:href="@{/pets/new}" class="btn">
+                <svg width="16" height="16"><use href="#icon-plus"/></svg>
+                Tier hinzufügen
+            </a>
+        </div>
+    </div>
+
+    <div class="card-list" th:if="${not #lists.isEmpty(pets)}">
+        <div class="profile-card" th:each="p : ${pets}">
+            <div class="profile-header">
+                <span class="profile-avatar">
+                    <svg th:switch="${p.animalType.name()}">
+                        <use th:case="'DOG'" href="#icon-dog"/>
+                        <use th:case="'CAT'" href="#icon-cat"/>
+                        <use th:case="'BIRD'" href="#icon-bird"/>
+                        <use th:case="*" href="#icon-pet"/>
+                    </svg>
+                </span>
+                <div style="flex:1;">
+                    <p class="profile-name" th:text="${p.name}"></p>
+                    <p class="profile-sub">
+                        <th:block th:switch="${p.animalType.name()}">
+                            <span th:case="'DOG'">Hund</span>
+                            <span th:case="'CAT'">Katze</span>
+                            <span th:case="'BIRD'">Vogel</span>
+                            <span th:case="'RABBIT'">Hase</span>
+                            <span th:case="'HAMSTER'">Hamster</span>
+                            <span th:case="*">Sonstige</span>
+                        </th:block>
+                        <span th:if="${p.age != null}"> &middot; <span th:text="${p.age}"></span> Jahre</span>
+                    </p>
+                </div>
+            </div>
+            <p class="profile-body" th:if="${p.notes != null and !p.notes.isEmpty()}" th:text="${p.notes}"></p>
+            <p class="profile-sub" th:if="${p.notes == null or p.notes.isEmpty()}"
+               style="font-style: italic; color: var(--c-text-muted);">Keine Notizen hinterlegt.</p>
+            <div class="profile-meta mt-4" sec:authorize="hasRole('ADMIN')">
+                <span class="profile-meta-item">Besitzer: <span th:text="${p.owner.name}"></span></span>
+            </div>
+            <form th:action="@{'/pets/' + ${p.id} + '/delete'}" method="post" class="inline-form mt-4">
+                <button type="submit" class="btn btn-sm btn-danger"
+                        onclick="return confirm('Tier wirklich löschen? Damit verschwinden auch alle Anfragen dafür.');">
+                    Löschen
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(pets)}">
+        <div class="empty-state-icon"><svg><use href="#icon-pet"/></svg></div>
+        <h3>Noch keine Tiere registriert</h3>
+        <p>Lege dein erstes Tier an, damit du Betreuungsanfragen stellen kannst.</p>
+        <a th:href="@{/pets/new}" class="btn">
+            <svg width="16" height="16"><use href="#icon-plus"/></svg>
+            Erstes Tier anlegen
+        </a>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: site-footer}"/>
+</body>
+</html>

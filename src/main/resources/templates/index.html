@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Pawsitters - Pet Holiday Platform</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/layout :: icon-sprite}"/>
+<th:block th:replace="~{fragments/layout :: site-header}"/>
+
+<main>
+    <div class="alert alert-success" th:if="${param.logout}">
+        <svg class="alert-icon"><use href="#icon-check"/></svg>
+        <span>Du wurdest erfolgreich abgemeldet.</span>
+    </div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Dein Tier in besten Pfoten</h1>
+            <p>Die Plattform, die Tierhalter mit liebevollen privaten Gastgebern verbindet &mdash;
+                fair, transparent und sicher.</p>
+            <div class="hero-cta" sec:authorize="!isAuthenticated()">
+                <a th:href="@{/register}" class="btn btn-accent">
+                    <svg width="16" height="16"><use href="#icon-plus"/></svg>
+                    Jetzt kostenlos registrieren
+                </a>
+                <a th:href="@{/login}" class="btn btn-secondary">Bereits dabei? Anmelden</a>
+            </div>
+            <div class="hero-cta" sec:authorize="isAuthenticated()">
+                <a th:href="@{/dashboard}" class="btn btn-accent">
+                    Zu meinem Dashboard
+                    <svg width="16" height="16"><use href="#icon-arrow-right"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <h2 class="section-title">So funktioniert Pawsitters</h2>
+    <div class="steps">
+        <div class="step">
+            <span class="step-number">1</span>
+            <h3>Profil anlegen</h3>
+            <p>Registriere dich als Tierhalter, Gastgeber &mdash; oder beides.</p>
+        </div>
+        <div class="step">
+            <span class="step-number">2</span>
+            <h3>Tier registrieren</h3>
+            <p>Als Halter erfasst du deine Tiere und stellst eine Betreuungsanfrage mit Zeitraum.</p>
+        </div>
+        <div class="step">
+            <span class="step-number">3</span>
+            <h3>Angebote vergleichen</h3>
+            <p>Passende Gastgeber schicken dir Angebote &mdash; du wählst das beste aus.</p>
+        </div>
+        <div class="step">
+            <span class="step-number">4</span>
+            <h3>Verreisen, entspannen</h3>
+            <p>Annahme genügt &mdash; konkurrierende Angebote werden automatisch abgelehnt.</p>
+        </div>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: site-footer}"/>
+</body>
+</html>
