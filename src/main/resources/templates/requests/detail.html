@@ -129,6 +129,13 @@
         <div>
             <div class="detail-summary">
                 <h3 style="margin-top: 0;">Anfrage-Details</h3>
+
+                <!-- Pet-Bild wenn vorhanden -->
+                <img th:if="${request.pet.hasImage()}"
+                     th:src="@{'/pets/' + ${request.pet.id} + '/image'}"
+                     th:alt="'Foto von ' + ${request.pet.name}"
+                     style="width: 100%; border-radius: var(--radius); aspect-ratio: 4/3; object-fit: cover; margin-bottom: var(--space-4);"/>
+
                 <dl>
                     <dt>Tier</dt>
                     <dd>

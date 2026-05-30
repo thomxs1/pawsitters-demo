@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Mein Profil bearbeiten &middot; Pawsitters</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/layout :: icon-sprite}"/>
+<th:block th:replace="~{fragments/layout :: site-header}"/>
+
+<main style="max-width: 680px;">
+    <div class="page-header">
+        <div>
+            <h1>Mein Tierhalter-Profil</h1>
+            <p class="subtitle">Diese Angaben sehen Gastgeber bei deinen Anfragen.</p>
+        </div>
+    </div>
+
+    <div class="alert alert-error" th:if="${error}">
+        <svg class="alert-icon"><use href="#icon-warning"/></svg>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="card">
+        <form th:action="@{'/owners/' + ${owner.id} + '/edit'}" method="post">
+            <div class="field">
+                <label for="name">Vollständiger Name</label>
+                <input type="text" id="name" name="name" required th:value="${owner.name}"
+                       placeholder="z. B. Tom Müller"/>
+            </div>
+
+            <div class="field">
+                <label for="email">E-Mail-Adresse</label>
+                <input type="email" id="email" th:value="${owner.email}" disabled
+                       style="background: var(--c-cream-dark); cursor: not-allowed;"/>
+                <span class="hint">Die E-Mail kann aus Sicherheitsgründen nicht geändert werden.</span>
+            </div>
+
+            <div class="field">
+                <label for="description">Über mich</label>
+                <textarea id="description" name="description" maxlength="1000"
+                          th:text="${owner.description}"
+                          placeholder="Erzähl Gastgebern kurz etwas über dich und deine Tiere ..."></textarea>
+                <span class="hint">Wird bei deinen Anfragen als zusätzlicher Kontext angezeigt.</span>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">
+                    <svg width="16" height="16"><use href="#icon-check"/></svg>
+                    Profil speichern
+                </button>
+                <a th:href="@{/dashboard}" class="btn btn-secondary">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: site-footer}"/>
+</body>
+</html>

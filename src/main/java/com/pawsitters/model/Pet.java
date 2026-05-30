@@ -35,6 +35,15 @@ public class Pet {
     @JoinColumn(name = "owner_id", nullable = false)
     private PetOwner owner;
 
+    // Optionales Profilbild des Tiers - LAZY damit Listen-Queries nicht jedes Mal die Bytes laden
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "image_data")
+    private byte[] imageData;
+
+    @Column(name = "image_content_type", length = 64)
+    private String imageContentType;
+
     public Pet() {}
 
     public Pet(String name, AnimalType animalType, Integer age, String notes, PetOwner owner) {
@@ -43,6 +52,14 @@ public class Pet {
         this.age = age;
         this.notes = notes;
         this.owner = owner;
+    }
+
+    /**
+     * True, wenn das Pet ein Profilbild hat. Prueft nur den ContentType,
+     * damit der LAZY-geladene image_data-BLOB nicht angefasst werden muss.
+     */
+    public boolean hasImage() {
+        return imageContentType != null && !imageContentType.isBlank();
     }
 
     // Getter und Setter
@@ -64,4 +81,10 @@ public class Pet {
 
     public PetOwner getOwner() { return owner; }
     public void setOwner(PetOwner owner) { this.owner = owner; }
+
+    public byte[] getImageData() { return imageData; }
+    public void setImageData(byte[] imageData) { this.imageData = imageData; }
+
+    public String getImageContentType() { return imageContentType; }
+    public void setImageContentType(String imageContentType) { this.imageContentType = imageContentType; }
 }

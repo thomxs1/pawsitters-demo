@@ -25,6 +25,14 @@
     <!-- ============================= -->
     <section class="dashboard-section" sec:authorize="hasRole('OWNER')" th:if="${ownerProfile != null}">
 
+        <div class="dashboard-section-header" style="margin-bottom: var(--space-4);">
+            <h2>Tierhalter-Übersicht</h2>
+            <a th:href="@{'/owners/' + ${ownerProfile.id} + '/edit'}" class="btn btn-sm btn-secondary">
+                <svg width="14" height="14"><use href="#icon-user"/></svg>
+                Profil bearbeiten
+            </a>
+        </div>
+
         <div class="stat-grid">
             <div class="stat-card">
                 <span class="stat-label">Meine Tiere</span>
@@ -51,34 +59,28 @@
         </div>
 
         <div class="card-list" th:if="${not #lists.isEmpty(ownerPets)}">
-            <div class="profile-card" th:each="pet : ${ownerPets}">
-                <div class="profile-header">
-                    <span class="profile-avatar">
-                        <svg th:switch="${pet.animalType.name()}">
-                            <use th:case="'DOG'" href="#icon-dog"/>
-                            <use th:case="'CAT'" href="#icon-cat"/>
-                            <use th:case="'BIRD'" href="#icon-bird"/>
-                            <use th:case="*" href="#icon-pet"/>
-                        </svg>
-                    </span>
-                    <div>
-                        <p class="profile-name" th:text="${pet.name}"></p>
-                        <p class="profile-sub">
-                            <th:block th:switch="${pet.animalType.name()}">
-                                <span th:case="'DOG'">Hund</span>
-                                <span th:case="'CAT'">Katze</span>
-                                <span th:case="'BIRD'">Vogel</span>
-                                <span th:case="'RABBIT'">Hase</span>
-                                <span th:case="*">Sonstige Tierart</span>
-                            </th:block>
-                            <span th:if="${pet.age != null}">
-                                &middot; <span th:text="${pet.age}"></span> Jahre
-                            </span>
-                        </p>
-                    </div>
+            <article class="pet-card" th:each="pet : ${ownerPets}">
+                <img th:if="${pet.hasImage()}" class="pet-card-image"
+                     th:src="@{'/pets/' + ${pet.id} + '/image'}"
+                     th:alt="'Foto von ' + ${pet.name}"/>
+                <div th:unless="${pet.hasImage()}" class="pet-card-image-placeholder">
+                    <svg th:switch="${pet.animalType.name()}">
+                        <use th:case="'DOG'" href="#icon-dog"/>
+                        <use th:case="'CAT'" href="#icon-cat"/>
+                        <use th:case="'BIRD'" href="#icon-bird"/>
+                        <use th:case="*" href="#icon-pet"/>
+                    </svg>
                 </div>
-                <p class="profile-body" th:if="${pet.notes != null and !pet.notes.isEmpty()}" th:text="${pet.notes}"></p>
-            </div>
+                <div class="pet-card-body">
+                    <h3 class="pet-card-name" th:text="${pet.name}"></h3>
+                    <div class="pet-card-meta">
+                        <th:block th:replace="~{fragments/layout :: animal-pill(${pet.animalType})}"/>
+                        <span th:if="${pet.age != null}">· <span th:text="${pet.age}"></span> Jahre</span>
+                    </div>
+                    <p class="pet-card-notes" th:if="${pet.notes != null and !pet.notes.isEmpty()}"
+                       th:text="${pet.notes}"></p>
+                </div>
+            </article>
         </div>
 
         <div class="empty-state" th:if="${#lists.isEmpty(ownerPets)}">

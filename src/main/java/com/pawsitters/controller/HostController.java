@@ -29,10 +29,19 @@ public class HostController {
 
     /**
      * Verzeichnis aller Gastgeber - öffentlich-ähnlich, jeder eingeloggte User darf es sehen.
+     * Optionaler Filter nach Tierart via ?animal=DOG
      */
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("hosts", service.findAll());
+    public String list(@RequestParam(required = false) AnimalType animal, Model model) {
+        var allHosts = service.findAll();
+        if (animal != null) {
+            allHosts = allHosts.stream()
+                    .filter(h -> h.getAcceptedAnimals() != null && h.getAcceptedAnimals().contains(animal))
+                    .toList();
+        }
+        model.addAttribute("hosts", allHosts);
+        model.addAttribute("activeAnimal", animal);
+        model.addAttribute("animalTypes", AnimalType.values());
         return "hosts/list";
     }
 

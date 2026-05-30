@@ -35,8 +35,12 @@ Alle Anforderungen aus der Aufgabenstellung sind umgesetzt:
 - **Authentifizierung** mit Spring Security 6 (BCrypt-Passwort-Hashes)
 - **Multi-Role-User**: Ein Nutzer kann gleichzeitig Tierhalter und Gastgeber sein
 - **Persönliches Dashboard** mit Rollen-spezifischer Ansicht
-- **Modernes Frontend** mit Design-System, SVG-Icons, Responsive-Layout
+- **Modernes Frontend** mit Design-System, SVG-Icons, Responsive-Layout, Animationen
+- **Haustier-Bilder hochladen** (Drag & Drop, JPG/PNG/WEBP/GIF, max. 5 MB, als BLOB in DB)
+- **Filter nach Tierart** im Gastgeber-Verzeichnis
+- **Profil-Editor** für Tierhalter und Gastgeber
 - **Autorisierung**: Nutzer können nur eigene Tiere / Anfragen / Angebote verwalten
+- **Deployment-bereit**: Dockerfile + render.yaml für One-Click-Deploy auf Render
 
 ## Demo-Accounts
 

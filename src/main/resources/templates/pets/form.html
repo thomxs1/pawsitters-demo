@@ -10,11 +10,11 @@
 <th:block th:replace="~{fragments/layout :: icon-sprite}"/>
 <th:block th:replace="~{fragments/layout :: site-header}"/>
 
-<main style="max-width: 640px;">
+<main style="max-width: 680px;">
     <div class="page-header">
         <div>
             <h1>Tier hinzufügen</h1>
-            <p class="subtitle">Erfasse die Basisdaten deines Tiers.</p>
+            <p class="subtitle">Erfasse die Basisdaten und optional ein Foto.</p>
         </div>
     </div>
 
@@ -24,12 +24,29 @@
     </div>
 
     <div class="card">
-        <form th:action="@{/pets}" method="post" th:object="${pet}">
+        <form th:action="@{/pets}" method="post" enctype="multipart/form-data" th:object="${pet}">
+
+            <!-- Bild-Upload mit Preview -->
+            <div class="field">
+                <label>Profilbild <span class="text-muted" style="font-weight: 400;">(optional)</span></label>
+                <label for="image" class="image-upload">
+                    <div class="image-upload-preview" id="imagePreview">
+                        <svg class="image-upload-icon"><use href="#icon-pet"/></svg>
+                        <p class="image-upload-text">Klicke oder ziehe ein Bild hierher</p>
+                        <p class="image-upload-hint">JPG, PNG, WEBP oder GIF &middot; max. 5 MB</p>
+                    </div>
+                    <img class="image-upload-image" id="imagePreviewImg" alt="Vorschau" hidden/>
+                    <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/webp,image/gif"
+                           style="display:none;" onchange="showImagePreview(event)"/>
+                </label>
+            </div>
+
             <div class="field">
                 <label for="name">Name des Tiers</label>
                 <input type="text" id="name" name="name" required th:value="*{name}"
                        placeholder="z. B. Bello, Luna, Charlie"/>
             </div>
+
             <div class="field">
                 <label for="animalType">Tierart</label>
                 <select id="animalType" name="animalType" required>
@@ -47,17 +64,20 @@
                     </option>
                 </select>
             </div>
+
             <div class="field">
                 <label for="age">Alter (Jahre)</label>
                 <input type="number" id="age" name="age" min="0" max="50" th:value="*{age}"
                        placeholder="optional"/>
             </div>
+
             <div class="field">
                 <label for="notes">Notizen für Gastgeber</label>
                 <textarea id="notes" name="notes" maxlength="1000" th:text="*{notes}"
                           placeholder="Charakter, Futter, Besonderheiten, Medikamente ..."></textarea>
                 <span class="hint">Diese Hinweise sehen potenzielle Gastgeber.</span>
             </div>
+
             <div class="form-actions">
                 <button type="submit">
                     <svg width="16" height="16"><use href="#icon-check"/></svg>
@@ -68,6 +88,40 @@
         </form>
     </div>
 </main>
+
+<script>
+    function showImagePreview(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const preview = document.getElementById('imagePreview');
+        const img = document.getElementById('imagePreviewImg');
+        const reader = new FileReader();
+        reader.onload = e => {
+            img.src = e.target.result;
+            img.hidden = false;
+            preview.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Drag & Drop
+    const upload = document.querySelector('.image-upload');
+    const input = document.getElementById('image');
+    if (upload && input) {
+        ['dragenter', 'dragover'].forEach(ev =>
+            upload.addEventListener(ev, e => { e.preventDefault(); upload.classList.add('drag-over'); })
+        );
+        ['dragleave', 'drop'].forEach(ev =>
+            upload.addEventListener(ev, e => { e.preventDefault(); upload.classList.remove('drag-over'); })
+        );
+        upload.addEventListener('drop', e => {
+            if (e.dataTransfer.files.length > 0) {
+                input.files = e.dataTransfer.files;
+                showImagePreview({ target: input });
+            }
+        });
+    }
+</script>
 
 <th:block th:replace="~{fragments/layout :: site-footer}"/>
 </body>

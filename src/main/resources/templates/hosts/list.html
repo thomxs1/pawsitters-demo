@@ -18,6 +18,35 @@
         </div>
     </div>
 
+    <!-- Filter nach Tierart -->
+    <div class="filter-bar">
+        <span class="filter-label">Filter:</span>
+        <a th:href="@{/hosts}"
+           th:classappend="${activeAnimal == null} ? ' active' : ''"
+           class="filter-chip">Alle</a>
+        <a th:each="t : ${animalTypes}"
+           th:href="@{/hosts(animal=${t})}"
+           th:classappend="${activeAnimal == t} ? ' active' : ''"
+           class="filter-chip">
+            <svg th:switch="${t.name()}">
+                <use th:case="'DOG'" href="#icon-dog"/>
+                <use th:case="'CAT'" href="#icon-cat"/>
+                <use th:case="'BIRD'" href="#icon-bird"/>
+                <use th:case="*" href="#icon-pet"/>
+            </svg>
+            <span th:switch="${t.name()}">
+                <span th:case="'DOG'">Hunde</span>
+                <span th:case="'CAT'">Katzen</span>
+                <span th:case="'BIRD'">Vögel</span>
+                <span th:case="'RABBIT'">Hasen</span>
+                <span th:case="'HAMSTER'">Hamster</span>
+                <span th:case="'REPTILE'">Reptilien</span>
+                <span th:case="'FISH'">Fische</span>
+                <span th:case="*">Sonstige</span>
+            </span>
+        </a>
+    </div>
+
     <div class="card-list" th:if="${not #lists.isEmpty(hosts)}">
         <div class="profile-card" th:each="h : ${hosts}">
             <div class="profile-header">

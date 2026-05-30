@@ -25,44 +25,69 @@
     </div>
 
     <div class="card-list" th:if="${not #lists.isEmpty(pets)}">
-        <div class="profile-card" th:each="p : ${pets}">
-            <div class="profile-header">
-                <span class="profile-avatar">
-                    <svg th:switch="${p.animalType.name()}">
-                        <use th:case="'DOG'" href="#icon-dog"/>
-                        <use th:case="'CAT'" href="#icon-cat"/>
-                        <use th:case="'BIRD'" href="#icon-bird"/>
-                        <use th:case="*" href="#icon-pet"/>
-                    </svg>
-                </span>
-                <div style="flex:1;">
-                    <p class="profile-name" th:text="${p.name}"></p>
-                    <p class="profile-sub">
-                        <th:block th:switch="${p.animalType.name()}">
-                            <span th:case="'DOG'">Hund</span>
-                            <span th:case="'CAT'">Katze</span>
-                            <span th:case="'BIRD'">Vogel</span>
-                            <span th:case="'RABBIT'">Hase</span>
-                            <span th:case="'HAMSTER'">Hamster</span>
-                            <span th:case="*">Sonstige</span>
-                        </th:block>
-                        <span th:if="${p.age != null}"> &middot; <span th:text="${p.age}"></span> Jahre</span>
-                    </p>
+        <article class="pet-card" th:each="p : ${pets}">
+            <!-- Hero-Bild oder Placeholder -->
+            <img th:if="${p.hasImage()}" class="pet-card-image"
+                 th:src="@{'/pets/' + ${p.id} + '/image'}"
+                 th:alt="'Foto von ' + ${p.name}"/>
+            <div th:unless="${p.hasImage()}" class="pet-card-image-placeholder">
+                <svg th:switch="${p.animalType.name()}">
+                    <use th:case="'DOG'" href="#icon-dog"/>
+                    <use th:case="'CAT'" href="#icon-cat"/>
+                    <use th:case="'BIRD'" href="#icon-bird"/>
+                    <use th:case="*" href="#icon-pet"/>
+                </svg>
+            </div>
+
+            <div class="pet-card-body">
+                <h2 class="pet-card-name" th:text="${p.name}"></h2>
+                <div class="pet-card-meta">
+                    <th:block th:replace="~{fragments/layout :: animal-pill(${p.animalType})}"/>
+                    <span th:if="${p.age != null}">· <span th:text="${p.age}"></span> Jahre</span>
+                </div>
+                <p class="pet-card-notes" th:if="${p.notes != null and !p.notes.isEmpty()}"
+                   th:text="${p.notes}"></p>
+                <p class="pet-card-notes text-muted" th:if="${p.notes == null or p.notes.isEmpty()}"
+                   style="font-style: italic;">
+                    Keine Notizen hinterlegt.
+                </p>
+
+                <div class="pet-card-meta" sec:authorize="hasRole('ADMIN')">
+                    <small class="text-muted">Besitzer: <span th:text="${p.owner.name}"></span></small>
+                </div>
+
+                <div class="pet-card-actions">
+                    <!-- Bild aendern -->
+                    <form th:action="@{'/pets/' + ${p.id} + '/image'}" method="post"
+                          enctype="multipart/form-data" class="inline-form">
+                        <label th:for="'image-' + ${p.id}" class="btn btn-sm btn-secondary" style="cursor:pointer;">
+                            <svg width="14" height="14"><use href="#icon-plus"/></svg>
+                            <span th:text="${p.hasImage()} ? 'Bild ändern' : 'Bild hinzufügen'"></span>
+                        </label>
+                        <input type="file" th:id="'image-' + ${p.id}" name="image"
+                               accept="image/jpeg,image/png,image/webp,image/gif"
+                               style="display:none;" onchange="this.form.submit()"/>
+                    </form>
+
+                    <form th:if="${p.hasImage()}" th:action="@{'/pets/' + ${p.id} + '/image/delete'}"
+                          method="post" class="inline-form">
+                        <button type="submit" class="btn btn-sm btn-ghost"
+                                onclick="return confirm('Bild wirklich entfernen?');">
+                            <svg width="14" height="14"><use href="#icon-x"/></svg>
+                            Bild entfernen
+                        </button>
+                    </form>
+
+                    <form th:action="@{'/pets/' + ${p.id} + '/delete'}" method="post" class="inline-form"
+                          style="margin-left: auto;">
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Tier wirklich löschen?');">
+                            Löschen
+                        </button>
+                    </form>
                 </div>
             </div>
-            <p class="profile-body" th:if="${p.notes != null and !p.notes.isEmpty()}" th:text="${p.notes}"></p>
-            <p class="profile-sub" th:if="${p.notes == null or p.notes.isEmpty()}"
-               style="font-style: italic; color: var(--c-text-muted);">Keine Notizen hinterlegt.</p>
-            <div class="profile-meta mt-4" sec:authorize="hasRole('ADMIN')">
-                <span class="profile-meta-item">Besitzer: <span th:text="${p.owner.name}"></span></span>
-            </div>
-            <form th:action="@{'/pets/' + ${p.id} + '/delete'}" method="post" class="inline-form mt-4">
-                <button type="submit" class="btn btn-sm btn-danger"
-                        onclick="return confirm('Tier wirklich löschen? Damit verschwinden auch alle Anfragen dafür.');">
-                    Löschen
-                </button>
-            </form>
-        </div>
+        </article>
     </div>
 
     <div class="empty-state" th:if="${#lists.isEmpty(pets)}">
