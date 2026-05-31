@@ -51,7 +51,8 @@
                 <label for="animalType">Tierart</label>
                 <select id="animalType" name="animalType" required>
                     <option value="">Bitte wählen ...</option>
-                    <option th:each="t : ${animalTypes}" th:value="${t}" th:selected="*{animalType == t}"
+                    <option th:each="t : ${animalTypes}" th:value="${t}"
+                            th:selected="${pet.animalType != null and pet.animalType == t}"
                             th:switch="${t.name()}">
                         <th:block th:case="'DOG'">🐕 Hund</th:block>
                         <th:block th:case="'CAT'">🐈 Katze</th:block>
