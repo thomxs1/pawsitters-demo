@@ -3,6 +3,8 @@ package com.pawsitters.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Haustier (Pet).
@@ -36,12 +38,13 @@ public class Pet {
     private PetOwner owner;
 
     // Optionales Profilbild des Tiers.
-    // Bytecode-Enhancement ist nicht aktiviert, daher kein @Basic(fetch=LAZY) - das
-    // wuerde von Hibernate 6 entweder ignoriert oder unzuverlaessig behandelt.
-    // Bild-Bytes werden also eager geladen; die Pet-Liste laedt aber meist nur ein paar
-    // Eintraege pro Owner, daher unproblematisch.
-    @Lob
-    @Column(name = "image_data")
+    // WICHTIG: @JdbcTypeCode(VARBINARY) statt @Lob! Bei PostgreSQL wuerde @Lob auf
+    // byte[] den "Large Object"-Mechanismus (oid) nutzen, der eine aktive Transaktion
+    // zum Lesen braucht - das fuehrt beim Bild-Streaming zu 500-Fehlern. VARBINARY
+    // mappt sauber auf bytea (PostgreSQL) bzw. VARBINARY (H2) - ohne columnDefinition,
+    // damit Hibernate pro Datenbank den passenden Typ waehlt.
+    @JdbcTypeCode(SqlTypes.VARBINARY)
+    @Column(name = "image_data", length = 10_000_000)
     private byte[] imageData;
 
     @Column(name = "image_content_type", length = 64)
@@ -59,7 +62,7 @@ public class Pet {
 
     /**
      * True, wenn das Pet ein Profilbild hat. Prueft nur den ContentType,
-     * damit der LAZY-geladene image_data-BLOB nicht angefasst werden muss.
+     * damit nicht unnoetig die Bild-Bytes inspiziert werden muessen.
      */
     public boolean hasImage() {
         return imageContentType != null && !imageContentType.isBlank();
