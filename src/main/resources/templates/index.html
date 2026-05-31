@@ -3,65 +3,690 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Pawsitters - Pet Holiday Platform</title>
+    <title>Pawsitters – Dein Tier in besten Pfoten</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <!-- Warme Display-Schrift nur fuer die Landing-Page; faellt auf Georgia zurueck -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet"/>
+    <style>
+        /* =======================================================
+           Landing Page - eigener Scope (lp-), beruehrt nichts anderes
+           ======================================================= */
+        .lp {
+            --lp-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+            --lp-ink: #1b3a2f;
+            --lp-moss: #2d6a4f;
+            --lp-sage: #52796f;
+            --lp-leaf: #97bc62;
+            --lp-cream: #f8f5f0;
+            --lp-sand: #efe7d8;
+            --lp-coral: #d97757;
+            --lp-coral-dk: #b85d3f;
+            margin: 0;
+            overflow-x: clip;
+        }
+
+        /* main hat im globalen CSS Padding/Max-Width - hier aufheben,
+           damit die Landing-Sektionen full-bleed gehen */
+        main.lp {
+            max-width: none;
+            padding: 0;
+        }
+
+        .lp-wrap {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ---------- Logout-Hinweis ---------- */
+        .lp-flash {
+            max-width: 1140px;
+            margin: 20px auto 0;
+            padding: 0 24px;
+        }
+
+        /* =======================================================
+           HERO
+           ======================================================= */
+        .lp-hero {
+            position: relative;
+            padding: 96px 0 120px;
+            background:
+                radial-gradient(120% 90% at 85% -10%, #2d6a4f 0%, #1f4d3a 45%, #1b3a2f 100%);
+            color: #fff;
+            overflow: hidden;
+            isolation: isolate;
+        }
+        /* organische helle Blobs */
+        .lp-hero::before,
+        .lp-hero::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(8px);
+            z-index: -1;
+        }
+        .lp-hero::before {
+            width: 420px; height: 420px;
+            top: -120px; right: -80px;
+            background: radial-gradient(circle, rgba(151,188,98,0.35) 0%, transparent 70%);
+        }
+        .lp-hero::after {
+            width: 360px; height: 360px;
+            bottom: -140px; left: -100px;
+            background: radial-gradient(circle, rgba(217,119,87,0.28) 0%, transparent 70%);
+        }
+
+        .lp-hero-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 48px;
+            align-items: center;
+        }
+
+        .lp-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--lp-leaf);
+            background: rgba(151,188,98,0.12);
+            border: 1px solid rgba(151,188,98,0.3);
+            padding: 7px 14px;
+            border-radius: 999px;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: lpUp 0.7s ease 0.05s forwards;
+        }
+        .lp-eyebrow svg { width: 15px; height: 15px; fill: var(--lp-leaf); }
+
+        .lp-hero h1 {
+            font-family: var(--lp-display);
+            font-weight: 600;
+            font-size: clamp(40px, 6vw, 68px);
+            line-height: 1.04;
+            letter-spacing: -0.02em;
+            margin: 0 0 22px;
+            opacity: 0;
+            animation: lpUp 0.7s ease 0.12s forwards;
+        }
+        .lp-hero h1 .accent {
+            color: var(--lp-leaf);
+            font-style: italic;
+        }
+        .lp-hero-lead {
+            font-size: 19px;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.9);
+            max-width: 520px;
+            margin: 0 0 32px;
+            opacity: 0;
+            animation: lpUp 0.7s ease 0.2s forwards;
+        }
+        .lp-cta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            opacity: 0;
+            animation: lpUp 0.7s ease 0.28s forwards;
+        }
+        .lp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 15px 26px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+            cursor: pointer;
+            border: none;
+        }
+        .lp-btn svg { width: 18px; height: 18px; }
+        .lp-btn-primary {
+            background: var(--lp-coral);
+            color: #fff;
+            box-shadow: 0 10px 28px rgba(217,119,87,0.35);
+        }
+        .lp-btn-primary svg { fill: #fff; }
+        .lp-btn-primary:hover {
+            background: var(--lp-coral-dk);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 34px rgba(217,119,87,0.45);
+        }
+        .lp-btn-ghost {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+        .lp-btn-ghost:hover {
+            background: rgba(255,255,255,0.16);
+            transform: translateY(-2px);
+        }
+
+        /* ---------- Hero-Illustration: Tier-Kreise ---------- */
+        .lp-hero-art {
+            position: relative;
+            height: 380px;
+            opacity: 0;
+            animation: lpFade 0.9s ease 0.35s forwards;
+        }
+        .lp-orb {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.22);
+            border: 5px solid rgba(255,255,255,0.85);
+        }
+        .lp-orb svg { fill: #fff; }
+        .lp-orb-1 {
+            width: 200px; height: 200px;
+            top: 30px; left: 60px;
+            background: linear-gradient(150deg, #52796f, #2d6a4f);
+            animation: lpFloat 6s ease-in-out infinite;
+        }
+        .lp-orb-1 svg { width: 96px; height: 96px; }
+        .lp-orb-2 {
+            width: 132px; height: 132px;
+            top: 0; right: 30px;
+            background: linear-gradient(150deg, #d99a7c, #d97757);
+            animation: lpFloat 5s ease-in-out infinite 0.6s;
+        }
+        .lp-orb-2 svg { width: 64px; height: 64px; }
+        .lp-orb-3 {
+            width: 150px; height: 150px;
+            bottom: 0; right: 70px;
+            background: linear-gradient(150deg, #b9d27e, #97bc62);
+            animation: lpFloat 5.5s ease-in-out infinite 0.3s;
+        }
+        .lp-orb-3 svg { width: 74px; height: 74px; }
+
+        /* schwebende Pfoten im Hero */
+        .lp-paw {
+            position: absolute;
+            fill: rgba(255,255,255,0.10);
+            z-index: -1;
+        }
+        .lp-paw-1 { width: 46px; height: 46px; top: 14%; left: 46%; transform: rotate(-18deg); animation: lpFloat 7s ease-in-out infinite; }
+        .lp-paw-2 { width: 30px; height: 30px; bottom: 16%; left: 38%; transform: rotate(22deg); animation: lpFloat 6s ease-in-out infinite 1s; }
+        .lp-paw-3 { width: 38px; height: 38px; top: 60%; right: 6%; transform: rotate(8deg); animation: lpFloat 6.5s ease-in-out infinite 0.5s; }
+
+        /* ---------- Wellen-Trenner ---------- */
+        .lp-wave {
+            display: block;
+            width: 100%;
+            height: 70px;
+            margin-top: -1px;
+        }
+
+        /* =======================================================
+           STEPS
+           ======================================================= */
+        .lp-section { padding: 86px 0; }
+        .lp-section-head {
+            text-align: center;
+            max-width: 640px;
+            margin: 0 auto 56px;
+        }
+        .lp-kicker {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--lp-coral);
+            margin: 0 0 12px;
+        }
+        .lp-h2 {
+            font-family: var(--lp-display);
+            font-weight: 600;
+            font-size: clamp(30px, 4vw, 42px);
+            line-height: 1.1;
+            letter-spacing: -0.015em;
+            color: var(--lp-ink);
+            margin: 0 0 14px;
+        }
+        .lp-sub {
+            font-size: 17px;
+            line-height: 1.6;
+            color: var(--lp-sage);
+            margin: 0;
+        }
+
+        .lp-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            position: relative;
+        }
+        /* verbindende gestrichelte Linie */
+        .lp-steps::before {
+            content: '';
+            position: absolute;
+            top: 34px;
+            left: 12%;
+            right: 12%;
+            height: 2px;
+            background-image: linear-gradient(to right, var(--lp-leaf) 50%, transparent 50%);
+            background-size: 14px 2px;
+            background-repeat: repeat-x;
+            z-index: 0;
+        }
+        .lp-step {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+        .lp-step-badge {
+            width: 70px; height: 70px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid var(--lp-sand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--lp-display);
+            font-size: 26px;
+            font-weight: 600;
+            color: var(--lp-moss);
+            box-shadow: 0 8px 22px rgba(27,58,47,0.08);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .lp-step:hover .lp-step-badge {
+            transform: translateY(-4px);
+            border-color: var(--lp-leaf);
+        }
+        .lp-step h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--lp-ink);
+            margin: 0 0 8px;
+        }
+        .lp-step p {
+            font-size: 14.5px;
+            line-height: 1.55;
+            color: var(--lp-sage);
+            margin: 0;
+        }
+
+        /* =======================================================
+           TIERARTEN
+           ======================================================= */
+        .lp-animals { background: var(--lp-cream); }
+        .lp-animal-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 8px;
+        }
+        .lp-animal {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            width: 116px;
+            padding: 26px 12px;
+            background: #fff;
+            border: 1px solid var(--lp-sand);
+            border-radius: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .lp-animal:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 36px rgba(27,58,47,0.12);
+        }
+        .lp-animal-ico {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--lp-primary-light, #d5e3dc);
+        }
+        .lp-animal-ico svg { width: 32px; height: 32px; fill: var(--lp-moss); }
+        .lp-animal span {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--lp-ink);
+        }
+
+        /* =======================================================
+           VORTEILE
+           ======================================================= */
+        .lp-features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 26px;
+        }
+        .lp-feature {
+            padding: 34px 30px;
+            border-radius: 22px;
+            background: #fff;
+            border: 1px solid var(--lp-sand);
+            position: relative;
+            overflow: hidden;
+        }
+        .lp-feature::after {
+            content: '';
+            position: absolute;
+            top: -40px; right: -40px;
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            background: var(--lp-cream);
+            z-index: 0;
+        }
+        .lp-feature > * { position: relative; z-index: 1; }
+        .lp-feature-ico {
+            width: 56px; height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .lp-feature-ico svg { width: 28px; height: 28px; fill: #fff; }
+        .lp-feature:nth-child(1) .lp-feature-ico { background: linear-gradient(140deg, #52796f, #2d6a4f); }
+        .lp-feature:nth-child(2) .lp-feature-ico { background: linear-gradient(140deg, #d99a7c, #d97757); }
+        .lp-feature:nth-child(3) .lp-feature-ico { background: linear-gradient(140deg, #b9d27e, #97bc62); }
+        .lp-feature h3 {
+            font-family: var(--lp-display);
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--lp-ink);
+            margin: 0 0 10px;
+        }
+        .lp-feature p {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--lp-sage);
+            margin: 0;
+        }
+
+        /* =======================================================
+           FINALER CTA
+           ======================================================= */
+        .lp-cta-band {
+            margin: 0 0 0;
+            padding: 0 24px 90px;
+        }
+        .lp-cta-inner {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 64px 48px;
+            border-radius: 32px;
+            background:
+                radial-gradient(110% 140% at 0% 0%, #2d6a4f 0%, #1b3a2f 70%);
+            color: #fff;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+        }
+        .lp-cta-inner::before {
+            content: '';
+            position: absolute;
+            width: 300px; height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(151,188,98,0.3) 0%, transparent 70%);
+            top: -100px; right: -60px;
+            z-index: -1;
+        }
+        .lp-cta-inner h2 {
+            font-family: var(--lp-display);
+            font-weight: 600;
+            font-size: clamp(28px, 4vw, 40px);
+            margin: 0 0 14px;
+            letter-spacing: -0.015em;
+        }
+        .lp-cta-inner p {
+            font-size: 17px;
+            color: rgba(255,255,255,0.88);
+            margin: 0 0 30px;
+        }
+        .lp-cta-band .lp-cta { justify-content: center; }
+
+        /* =======================================================
+           Animationen
+           ======================================================= */
+        @keyframes lpUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes lpFade {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        @keyframes lpFloat {
+            0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+            50%      { transform: translateY(-14px) rotate(var(--r, 0deg)); }
+        }
+        .lp-reveal {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .lp-reveal.in { opacity: 1; transform: none; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .lp-hero *, .lp-orb, .lp-paw { animation: none !important; }
+            .lp-reveal { opacity: 1; transform: none; transition: none; }
+        }
+
+        /* =======================================================
+           Responsive
+           ======================================================= */
+        @media (max-width: 860px) {
+            .lp-hero-grid { grid-template-columns: 1fr; gap: 28px; }
+            .lp-hero-art { height: 300px; order: -1; }
+            .lp-steps { grid-template-columns: repeat(2, 1fr); gap: 36px 20px; }
+            .lp-steps::before { display: none; }
+            .lp-features { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 520px) {
+            .lp-hero { padding: 64px 0 90px; }
+            .lp-section { padding: 64px 0; }
+            .lp-cta-inner { padding: 48px 26px; }
+        }
+    </style>
 </head>
 <body>
 <th:block th:replace="~{fragments/layout :: icon-sprite}"/>
 <th:block th:replace="~{fragments/layout :: site-header}"/>
 
-<main>
-    <div class="alert alert-success" th:if="${param.logout}">
-        <svg class="alert-icon"><use href="#icon-check"/></svg>
-        <span>Du wurdest erfolgreich abgemeldet.</span>
+<main class="lp">
+
+    <div class="lp-flash" th:if="${param.logout}">
+        <div class="alert alert-success">
+            <svg class="alert-icon"><use href="#icon-check"/></svg>
+            <span>Du wurdest erfolgreich abgemeldet.</span>
+        </div>
     </div>
 
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Dein Tier in besten Pfoten</h1>
-            <p>Die Plattform, die Tierhalter mit liebevollen privaten Gastgebern verbindet &mdash;
-                fair, transparent und sicher.</p>
-            <div class="hero-cta" sec:authorize="!isAuthenticated()">
-                <a th:href="@{/register}" class="btn btn-accent">
-                    <svg width="16" height="16"><use href="#icon-plus"/></svg>
-                    Jetzt kostenlos registrieren
-                </a>
-                <a th:href="@{/login}" class="btn btn-secondary">Bereits dabei? Anmelden</a>
+    <!-- ============== HERO ============== -->
+    <section class="lp-hero">
+        <!-- schwebende Pfoten -->
+        <svg class="lp-paw lp-paw-1"><use href="#icon-paw"/></svg>
+        <svg class="lp-paw lp-paw-2"><use href="#icon-paw"/></svg>
+        <svg class="lp-paw lp-paw-3"><use href="#icon-paw"/></svg>
+
+        <div class="lp-wrap">
+            <div class="lp-hero-grid">
+                <div class="lp-hero-copy">
+                    <span class="lp-eyebrow">
+                        <svg><use href="#icon-paw"/></svg>
+                        Pet Holiday Platform
+                    </span>
+                    <h1>Dein Tier in <span class="accent">besten Pfoten</span></h1>
+                    <p class="lp-hero-lead">
+                        Pawsitters verbindet Tierhalter mit liebevollen privaten Gastgebern –
+                        fair, transparent und ohne anonyme Tierpension. Damit du beruhigt
+                        verreisen kannst.
+                    </p>
+                    <div class="lp-cta" sec:authorize="!isAuthenticated()">
+                        <a th:href="@{/register}" class="lp-btn lp-btn-primary">
+                            <svg><use href="#icon-plus"/></svg>
+                            Kostenlos registrieren
+                        </a>
+                        <a th:href="@{/login}" class="lp-btn lp-btn-ghost">Anmelden</a>
+                    </div>
+                    <div class="lp-cta" sec:authorize="isAuthenticated()">
+                        <a th:href="@{/dashboard}" class="lp-btn lp-btn-primary">
+                            Zu meinem Dashboard
+                            <svg><use href="#icon-arrow-right"/></svg>
+                        </a>
+                        <a th:href="@{/hosts}" class="lp-btn lp-btn-ghost">Gastgeber entdecken</a>
+                    </div>
+                </div>
+
+                <div class="lp-hero-art">
+                    <div class="lp-orb lp-orb-1"><svg><use href="#icon-dog"/></svg></div>
+                    <div class="lp-orb lp-orb-2"><svg><use href="#icon-bird"/></svg></div>
+                    <div class="lp-orb lp-orb-3"><svg><use href="#icon-cat"/></svg></div>
+                </div>
             </div>
-            <div class="hero-cta" sec:authorize="isAuthenticated()">
-                <a th:href="@{/dashboard}" class="btn btn-accent">
+        </div>
+    </section>
+    <!-- Wellen-Trenner -->
+    <svg class="lp-wave" viewBox="0 0 1440 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,32 C240,72 480,72 720,40 C960,8 1200,8 1440,36 L1440,70 L0,70 Z" fill="#1b3a2f"/>
+    </svg>
+
+    <!-- ============== SO FUNKTIONIERT'S ============== -->
+    <section class="lp-section">
+        <div class="lp-wrap">
+            <div class="lp-section-head lp-reveal">
+                <p class="lp-kicker">In vier Schritten</p>
+                <h2 class="lp-h2">So funktioniert Pawsitters</h2>
+                <p class="lp-sub">Von der Registrierung bis zur entspannten Abreise –
+                    der ganze Ablauf ist bewusst einfach gehalten.</p>
+            </div>
+            <div class="lp-steps lp-reveal">
+                <div class="lp-step">
+                    <div class="lp-step-badge">1</div>
+                    <h3>Profil anlegen</h3>
+                    <p>Registriere dich als Tierhalter, Gastgeber – oder beides in einem Konto.</p>
+                </div>
+                <div class="lp-step">
+                    <div class="lp-step-badge">2</div>
+                    <h3>Tier registrieren</h3>
+                    <p>Erfasse dein Tier samt Foto und stelle eine Anfrage mit Zeitraum.</p>
+                </div>
+                <div class="lp-step">
+                    <div class="lp-step-badge">3</div>
+                    <h3>Angebote vergleichen</h3>
+                    <p>Passende Gastgeber melden sich – du vergleichst Preis und Profil in Ruhe.</p>
+                </div>
+                <div class="lp-step">
+                    <div class="lp-step-badge">4</div>
+                    <h3>Verreisen &amp; entspannen</h3>
+                    <p>Ein Klick genügt – konkurrierende Angebote werden automatisch abgelehnt.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============== TIERARTEN ============== -->
+    <section class="lp-section lp-animals">
+        <div class="lp-wrap">
+            <div class="lp-section-head lp-reveal">
+                <p class="lp-kicker">Für jedes Fellknäuel</p>
+                <h2 class="lp-h2">Diese Tiere finden hier ein Zuhause auf Zeit</h2>
+                <p class="lp-sub">Vom verspielten Welpen bis zum gemütlichen Reptil –
+                    Gastgeber geben an, welche Tierarten sie aufnehmen.</p>
+            </div>
+            <div class="lp-animal-grid lp-reveal">
+                <div class="lp-animal"><span class="lp-animal-ico"><svg><use href="#icon-dog"/></svg></span><span>Hunde</span></div>
+                <div class="lp-animal"><span class="lp-animal-ico"><svg><use href="#icon-cat"/></svg></span><span>Katzen</span></div>
+                <div class="lp-animal"><span class="lp-animal-ico"><svg><use href="#icon-bird"/></svg></span><span>Vögel</span></div>
+                <div class="lp-animal"><span class="lp-animal-ico"><svg><use href="#icon-rabbit"/></svg></span><span>Hasen</span></div>
+                <div class="lp-animal"><span class="lp-animal-ico"><svg><use href="#icon-hamster"/></svg></span><span>Hamster</span></div>
+                <div class="lp-animal"><span class="lp-animal-ico"><svg><use href="#icon-reptile"/></svg></span><span>Reptilien</span></div>
+                <div class="lp-animal"><span class="lp-animal-ico"><svg><use href="#icon-fish"/></svg></span><span>Fische</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============== VORTEILE ============== -->
+    <section class="lp-section">
+        <div class="lp-wrap">
+            <div class="lp-section-head lp-reveal">
+                <p class="lp-kicker">Warum Pawsitters</p>
+                <h2 class="lp-h2">Vertrauen, das sich gut anfühlt</h2>
+            </div>
+            <div class="lp-features lp-reveal">
+                <div class="lp-feature">
+                    <div class="lp-feature-ico"><svg><use href="#icon-user"/></svg></div>
+                    <h3>Persönlich statt anonym</h3>
+                    <p>Echte Menschen, echte Profile. Du siehst, wer dein Tier betreut,
+                        und entscheidest selbst, wem du vertraust.</p>
+                </div>
+                <div class="lp-feature">
+                    <div class="lp-feature-ico"><svg><use href="#icon-check"/></svg></div>
+                    <h3>Fair &amp; transparent</h3>
+                    <p>Gastgeber nennen ihren Wochenpreis offen. Keine versteckten Gebühren,
+                        kein Kleingedrucktes – du vergleichst auf einen Blick.</p>
+                </div>
+                <div class="lp-feature">
+                    <div class="lp-feature-ico"><svg><use href="#icon-calendar"/></svg></div>
+                    <h3>Passgenau gematcht</h3>
+                    <p>Du siehst nur Gastgeber, die deine Tierart aufnehmen und in deinem
+                        Zeitraum verfügbar sind. Kein Suchen, kein Raten.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============== FINALER CTA ============== -->
+    <section class="lp-cta-band">
+        <div class="lp-cta-inner lp-reveal">
+            <h2>Bereit, dein Tier in gute Pfoten zu geben?</h2>
+            <p>In zwei Minuten registriert – und schon kann die Suche losgehen.</p>
+            <div class="lp-cta" sec:authorize="!isAuthenticated()">
+                <a th:href="@{/register}" class="lp-btn lp-btn-primary">
+                    <svg><use href="#icon-paw"/></svg>
+                    Jetzt kostenlos starten
+                </a>
+            </div>
+            <div class="lp-cta" sec:authorize="isAuthenticated()">
+                <a th:href="@{/dashboard}" class="lp-btn lp-btn-primary">
                     Zu meinem Dashboard
-                    <svg width="16" height="16"><use href="#icon-arrow-right"/></svg>
+                    <svg><use href="#icon-arrow-right"/></svg>
                 </a>
             </div>
         </div>
     </section>
 
-    <h2 class="section-title">So funktioniert Pawsitters</h2>
-    <div class="steps">
-        <div class="step">
-            <span class="step-number">1</span>
-            <h3>Profil anlegen</h3>
-            <p>Registriere dich als Tierhalter, Gastgeber &mdash; oder beides.</p>
-        </div>
-        <div class="step">
-            <span class="step-number">2</span>
-            <h3>Tier registrieren</h3>
-            <p>Als Halter erfasst du deine Tiere und stellst eine Betreuungsanfrage mit Zeitraum.</p>
-        </div>
-        <div class="step">
-            <span class="step-number">3</span>
-            <h3>Angebote vergleichen</h3>
-            <p>Passende Gastgeber schicken dir Angebote &mdash; du wählst das beste aus.</p>
-        </div>
-        <div class="step">
-            <span class="step-number">4</span>
-            <h3>Verreisen, entspannen</h3>
-            <p>Annahme genügt &mdash; konkurrierende Angebote werden automatisch abgelehnt.</p>
-        </div>
-    </div>
 </main>
 
 <th:block th:replace="~{fragments/layout :: site-footer}"/>
+
+<script>
+    // Sanftes Einblenden beim Scrollen
+    (function () {
+        var els = document.querySelectorAll('.lp-reveal');
+        if (!('IntersectionObserver' in window)) {
+            els.forEach(function (e) { e.classList.add('in'); });
+            return;
+        }
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in');
+                    io.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+        els.forEach(function (e) { io.observe(e); });
+    })();
+</script>
 </body>
 </html>
