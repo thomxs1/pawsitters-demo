@@ -27,10 +27,10 @@
     <div class="card-list" th:if="${not #lists.isEmpty(pets)}">
         <article class="pet-card" th:each="p : ${pets}">
             <!-- Hero-Bild oder Placeholder -->
-            <img th:if="${p.hasImage()}" class="pet-card-image"
+            <img th:if="${p.imageContentType != null}" class="pet-card-image"
                  th:src="@{'/pets/' + ${p.id} + '/image'}"
                  th:alt="'Foto von ' + ${p.name}"/>
-            <div th:unless="${p.hasImage()}" class="pet-card-image-placeholder">
+            <div th:unless="${p.imageContentType != null}" class="pet-card-image-placeholder">
                 <svg th:switch="${p.animalType.name()}">
                     <use th:case="'DOG'" href="#icon-dog"/>
                     <use th:case="'CAT'" href="#icon-cat"/>
@@ -62,14 +62,14 @@
                           enctype="multipart/form-data" class="inline-form">
                         <label th:for="'image-' + ${p.id}" class="btn btn-sm btn-secondary" style="cursor:pointer;">
                             <svg width="14" height="14"><use href="#icon-plus"/></svg>
-                            <span th:text="${p.hasImage()} ? 'Bild ändern' : 'Bild hinzufügen'"></span>
+                            <span th:text="${p.imageContentType != null} ? 'Bild ändern' : 'Bild hinzufügen'"></span>
                         </label>
                         <input type="file" th:id="'image-' + ${p.id}" name="image"
                                accept="image/jpeg,image/png,image/webp,image/gif"
                                style="display:none;" onchange="this.form.submit()"/>
                     </form>
 
-                    <form th:if="${p.hasImage()}" th:action="@{'/pets/' + ${p.id} + '/image/delete'}"
+                    <form th:if="${p.imageContentType != null}" th:action="@{'/pets/' + ${p.id} + '/image/delete'}"
                           method="post" class="inline-form">
                         <button type="submit" class="btn btn-sm btn-ghost"
                                 onclick="return confirm('Bild wirklich entfernen?');">

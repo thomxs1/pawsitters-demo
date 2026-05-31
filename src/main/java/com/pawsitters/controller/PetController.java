@@ -86,19 +86,26 @@ public class PetController {
     @Transactional(readOnly = true)
     public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
         Pet pet = petService.findById(id).orElse(null);
-        if (pet == null || !pet.hasImage()) {
+        if (pet == null) {
             return ResponseEntity.notFound().build();
         }
-        MediaType contentType;
-        try {
-            contentType = MediaType.parseMediaType(pet.getImageContentType());
-        } catch (Exception e) {
-            contentType = MediaType.IMAGE_JPEG;
+        byte[] data = pet.getImageData();
+        if (data == null || data.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+        MediaType contentType = MediaType.IMAGE_JPEG;
+        String stored = pet.getImageContentType();
+        if (stored != null && !stored.isBlank()) {
+            try {
+                contentType = MediaType.parseMediaType(stored);
+            } catch (Exception ignore) {
+                // Fallback bleibt JPEG
+            }
         }
         return ResponseEntity.ok()
                 .contentType(contentType)
                 .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS).cachePrivate())
-                .body(pet.getImageData());
+                .body(data);
     }
 
     /**

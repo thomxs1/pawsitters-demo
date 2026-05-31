@@ -60,10 +60,10 @@
 
         <div class="card-list" th:if="${not #lists.isEmpty(ownerPets)}">
             <article class="pet-card" th:each="pet : ${ownerPets}">
-                <img th:if="${pet.hasImage()}" class="pet-card-image"
+                <img th:if="${pet.imageContentType != null}" class="pet-card-image"
                      th:src="@{'/pets/' + ${pet.id} + '/image'}"
                      th:alt="'Foto von ' + ${pet.name}"/>
-                <div th:unless="${pet.hasImage()}" class="pet-card-image-placeholder">
+                <div th:unless="${pet.imageContentType != null}" class="pet-card-image-placeholder">
                     <svg th:switch="${pet.animalType.name()}">
                         <use th:case="'DOG'" href="#icon-dog"/>
                         <use th:case="'CAT'" href="#icon-cat"/>

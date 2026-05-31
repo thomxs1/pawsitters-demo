@@ -35,9 +35,12 @@ public class Pet {
     @JoinColumn(name = "owner_id", nullable = false)
     private PetOwner owner;
 
-    // Optionales Profilbild des Tiers - LAZY damit Listen-Queries nicht jedes Mal die Bytes laden
+    // Optionales Profilbild des Tiers.
+    // Bytecode-Enhancement ist nicht aktiviert, daher kein @Basic(fetch=LAZY) - das
+    // wuerde von Hibernate 6 entweder ignoriert oder unzuverlaessig behandelt.
+    // Bild-Bytes werden also eager geladen; die Pet-Liste laedt aber meist nur ein paar
+    // Eintraege pro Owner, daher unproblematisch.
     @Lob
-    @Basic(fetch = FetchType.LAZY)
     @Column(name = "image_data")
     private byte[] imageData;
 
